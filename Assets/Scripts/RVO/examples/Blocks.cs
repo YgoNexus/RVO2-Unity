@@ -162,7 +162,7 @@ namespace RVO
             {
                 Vector2 goalVector = goals[i] - Simulator.Instance.getAgentPosition(i);
 
-                if (RVOMath.absSq(goalVector) > 1.0f)
+                if (RVOMath.Square(goalVector) > 1.0f)
                 {
                     goalVector = RVOMath.normalize(goalVector);
                 }
@@ -183,7 +183,7 @@ namespace RVO
             /* Check if all agents have reached their goals. */
             for (int i = 0; i < Simulator.Instance.getNumAgents(); ++i)
             {
-                if (RVOMath.absSq(Simulator.Instance.getAgentPosition(i) - goals[i]) > 400.0f)
+                if (RVOMath.Square(Simulator.Instance.getAgentPosition(i) - goals[i]) > 400.0f)
                 {
                     return false;
                 }

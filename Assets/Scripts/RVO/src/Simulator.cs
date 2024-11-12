@@ -143,7 +143,17 @@ namespace RVO
                 }
             }
             if (isDelete)
-                onDelAgent();
+            {
+                agentNo2indexDict_.Clear();
+                index2agentNoDict_.Clear();
+
+                for (int i = 0; i < agents_.Count; i++)
+                {
+                    int agentNo = agents_[i].id_;
+                    agentNo2indexDict_.Add(agentNo, i);
+                    index2agentNoDict_.Add(i, agentNo);
+                }
+            }
         }
 
         static int s_totalID = 0;
@@ -180,18 +190,6 @@ namespace RVO
             return agent.id_;
         }
 
-        void onDelAgent()
-        {
-            agentNo2indexDict_.Clear();
-            index2agentNoDict_.Clear();
-
-            for (int i = 0; i < agents_.Count; i++)
-            {
-                int agentNo = agents_[i].id_;
-                agentNo2indexDict_.Add(agentNo, i);
-                index2agentNoDict_.Add(i, agentNo);
-            }
-        }
 
         void onAddAgent()
         {
@@ -205,38 +203,38 @@ namespace RVO
         }
 
         /**
-         * <summary>Adds a new agent to the simulation.</summary>
-         *
-         * <returns>The number of the agent.</returns>
-         *
-         * <param name="position">The two-dimensional starting position of this
-         * agent.</param>
-         * <param name="neighborDist">The maximum distance (center point to
-         * center point) to other agents this agent takes into account in the
-         * navigation. The larger this number, the longer the running time of
-         * the simulation. If the number is too low, the simulation will not be
-         * safe. Must be non-negative.</param>
-         * <param name="maxNeighbors">The maximum number of other agents this
-         * agent takes into account in the navigation. The larger this number,
-         * the longer the running time of the simulation. If the number is too
-         * low, the simulation will not be safe.</param>
-         * <param name="timeHorizon">The minimal amount of time for which this
-         * agent's velocities that are computed by the simulation are safe with
-         * respect to other agents. The larger this number, the sooner this
-         * agent will respond to the presence of other agents, but the less
-         * freedom this agent has in choosing its velocities. Must be positive.
-         * </param>
-         * <param name="timeHorizonObst">The minimal amount of time for which
-         * this agent's velocities that are computed by the simulation are safe
-         * with respect to obstacles. The larger this number, the sooner this
-         * agent will respond to the presence of obstacles, but the less freedom
-         * this agent has in choosing its velocities. Must be positive.</param>
-         * <param name="radius">The radius of this agent. Must be non-negative.
-         * </param>
-         * <param name="maxSpeed">The maximum speed of this agent. Must be
-         * non-negative.</param>
-         * <param name="velocity">The initial two-dimensional linear velocity of
-         * this agent.</param>
+          <summary>Adds a new agent to the simulation.</summary>
+         
+          <returns>The number of the agent.</returns>
+         
+          <param name="position">The two-dimensional starting position of this
+          agent.</param>
+          <param name="neighborDist">The maximum distance (center point to
+          center point) to other agents this agent takes into account in the
+          navigation. The larger this number, the longer the running time of
+          the simulation. If the number is too low, the simulation will not be
+          safe. Must be non-negative.</param>
+          <param name="maxNeighbors">The maximum number of other agents this
+          agent takes into account in the navigation. The larger this number,
+          the longer the running time of the simulation. If the number is too
+          low, the simulation will not be safe.</param>
+          <param name="timeHorizon">The minimal amount of time for which this
+          agent's velocities that are computed by the simulation are safe with
+          respect to other agents. The larger this number, the sooner this
+          agent will respond to the presence of other agents, but the less
+          freedom this agent has in choosing its velocities. Must be positive.
+          </param>
+          <param name="timeHorizonObst">The minimal amount of time for which
+          this agent's velocities that are computed by the simulation are safe
+          with respect to obstacles. The larger this number, the sooner this
+          agent will respond to the presence of obstacles, but the less freedom
+          this agent has in choosing its velocities. Must be positive.</param>
+          <param name="radius">The radius of this agent. Must be non-negative.
+          </param>
+          <param name="maxSpeed">The maximum speed of this agent. Must be
+          non-negative.</param>
+          <param name="velocity">The initial two-dimensional linear velocity of
+          this agent.</param>
          */
         public int addAgent(Vector2 position, float neighborDist, int maxNeighbors, float timeHorizon, float timeHorizonObst, float radius, float maxSpeed, Vector2 velocity)
         {
@@ -276,7 +274,7 @@ namespace RVO
                 return -1;
             }
 
-            int obstacleNo = obstacles_.Count;
+            int obstacleFirstIndex = obstacles_.Count;
 
             for (int i = 0; i < vertices.Count; ++i)
             {
@@ -291,7 +289,7 @@ namespace RVO
 
                 if (i == vertices.Count - 1)
                 {
-                    obstacle.next_ = obstacles_[obstacleNo];
+                    obstacle.next_ = obstacles_[obstacleFirstIndex];
                     obstacle.next_.previous_ = obstacle;
                 }
 
@@ -310,7 +308,7 @@ namespace RVO
                 obstacles_.Add(obstacle);
             }
 
-            return obstacleNo;
+            return obstacleFirstIndex;
         }
 
         /**

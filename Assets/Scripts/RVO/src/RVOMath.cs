@@ -55,19 +55,18 @@ namespace RVO
          */
         public static float abs(Vector2 vector)
         {
-            return sqrt(absSq(vector));
+            return sqrt(Square(vector));
         }
 
-        /**
-         * <summary>Computes the squared length of a specified two-dimensional
-         * vector.</summary>
-         *
-         * <returns>The squared length of the two-dimensional vector.</returns>
-         *
-         * <param name="vector">The two-dimensional vector whose squared length
-         * is to be computed.</param>
+        /*
+           <summary>Computes the squared length of a specified two-dimensional vector.</summary>
+          
+           <returns>The squared length of the two-dimensional vector.</returns>
+          
+           <param name="vector">The two-dimensional vector whose squared length
+           is to be computed.</param>
          */
-        public static float absSq(Vector2 vector)
+        public static float Square(Vector2 vector)
         {
             return vector * vector;
         }
@@ -119,19 +118,19 @@ namespace RVO
          */
         internal static float distSqPointLineSegment(Vector2 vector1, Vector2 vector2, Vector2 vector3)
         {
-            float r = ((vector3 - vector1) * (vector2 - vector1)) / absSq(vector2 - vector1);
+            float r = ( ( vector3 - vector1 ) * ( vector2 - vector1 ) ) / Square(vector2 - vector1);
 
             if (r < 0.0f)
             {
-                return absSq(vector3 - vector1);
+                return Square(vector3 - vector1);
             }
 
             if (r > 1.0f)
             {
-                return absSq(vector3 - vector2);
+                return Square(vector3 - vector2);
             }
 
-            return absSq(vector3 - (vector1 + r * (vector2 - vector1)));
+            return Square(vector3 - ( vector1 + r * ( vector2 - vector1 ) ));
         }
 
         /**
@@ -171,7 +170,7 @@ namespace RVO
          *
          * <param name="scalar">The float to be squared.</param>
          */
-        internal static float sqr(float scalar)
+        internal static float Square(float scalar)
         {
             return scalar * scalar;
         }
