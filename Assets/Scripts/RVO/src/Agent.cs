@@ -113,10 +113,10 @@ namespace RVO
                 }
 
                 /* Not yet covered. Check for collisions. */
-                float distSq1 = RVOMath.Square(posToObstacle1);
-                float distSq2 = RVOMath.Square(posToObstacle2);
+                float distPosToObstacle1Square = RVOMath.Square(posToObstacle1);
+                float distPosToObstacle2Square = RVOMath.Square(posToObstacle2);
 
-                float radiusSq = RVOMath.Square(radius_);
+                float radiusSquare = RVOMath.Square(radius_);
 
                 Vector2 obstacleVector = obstacle2.point_ - obstacle1.point_;
                 float s = ( -posToObstacle1 * obstacleVector ) / RVOMath.Square(obstacleVector);
@@ -124,7 +124,7 @@ namespace RVO
 
                 Line line;
 
-                if (s < 0.0f && distSq1 <= radiusSq)
+                if (s < 0.0f && distPosToObstacle1Square <= radiusSquare)
                 {
                     /* Collision with left vertex. Ignore if non-convex. */
                     if (obstacle1.convex_)
@@ -136,7 +136,7 @@ namespace RVO
 
                     continue;
                 }
-                else if (s > 1.0f && distSq2 <= radiusSq)
+                else if (s > 1.0f && distPosToObstacle2Square <= radiusSquare)
                 {
                     //Collision with right vertex. Ignore if non-convex or if it will be taken care of by neighboring obstacle.
                     if (obstacle2.convex_ && RVOMath.det(posToObstacle2, obstacle2.direction_) >= 0.0f)
@@ -148,7 +148,7 @@ namespace RVO
 
                     continue;
                 }
-                else if (s >= 0.0f && s < 1.0f && distSqLine <= radiusSq)
+                else if (s >= 0.0f && s < 1.0f && distSqLine <= radiusSquare)
                 {
                     /* Collision with obstacle segment. */
                     line.point = new Vector2(0.0f, 0.0f);
@@ -158,20 +158,13 @@ namespace RVO
                     continue;
                 }
 
-                /*
-                 * No collision. Compute legs. When obliquely viewed, both legs
-                 * can come from a single vertex. Legs extend cut-off line when
-                 * non-convex vertex.
-                 */
+                /* No collision. Compute legs. When obliquely viewed, both legs can come from a single vertex. Legs extend cut-off line when non-convex vertex. */
 
                 Vector2 leftLegDirection, rightLegDirection;
 
-                if (s < 0.0f && distSqLine <= radiusSq)
+                if (s < 0.0f && distSqLine <= radiusSquare)
                 {
-                    /*
-                     * Obstacle viewed obliquely so that left vertex
-                     * defines velocity obstacle.
-                     */
+                    /* Obstacle viewed obliquely so that left vertex defines velocity obstacle. */
                     if (!obstacle1.convex_)
                     {
                         /* Ignore obstacle. */
@@ -180,11 +173,19 @@ namespace RVO
 
                     obstacle2 = obstacle1;
 
-                    float leg1 = RVOMath.sqrt(distSq1 - radiusSq);
-                    leftLegDirection = new Vector2(posToObstacle1.x() * leg1 - posToObstacle1.y() * radius_, posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1) / distSq1;
-                    rightLegDirection = new Vector2(posToObstacle1.x() * leg1 + posToObstacle1.y() * radius_, -posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1) / distSq1;
+                    float leg1 = RVOMath.sqrt(distPosToObstacle1Square - radiusSquare);
+                    leftLegDirection =
+                        new Vector2
+                        (posToObstacle1.x() * leg1 - posToObstacle1.y() * radius_,
+                        posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1)
+                        / distPosToObstacle1Square;
+
+                    rightLegDirection =
+                        new Vector2(posToObstacle1.x() * leg1 + posToObstacle1.y() * radius_,
+                        -posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1)
+                        / distPosToObstacle1Square;
                 }
-                else if (s > 1.0f && distSqLine <= radiusSq)
+                else if (s > 1.0f && distSqLine <= radiusSquare)
                 {
                     /*
                      * Obstacle viewed obliquely so that
@@ -198,17 +199,26 @@ namespace RVO
 
                     obstacle1 = obstacle2;
 
-                    float leg2 = RVOMath.sqrt(distSq2 - radiusSq);
-                    leftLegDirection = new Vector2(posToObstacle2.x() * leg2 - posToObstacle2.y() * radius_, posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2) / distSq2;
-                    rightLegDirection = new Vector2(posToObstacle2.x() * leg2 + posToObstacle2.y() * radius_, -posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2) / distSq2;
+                    float leg2 = RVOMath.sqrt(distPosToObstacle2Square - radiusSquare);
+                    leftLegDirection =
+                        new Vector2(posToObstacle2.x() * leg2 - posToObstacle2.y() * radius_,
+                        posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2)
+                        / distPosToObstacle2Square;
+                    rightLegDirection =
+                        new Vector2(posToObstacle2.x() * leg2 + posToObstacle2.y() * radius_,
+                        -posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2)
+                        / distPosToObstacle2Square;
                 }
                 else
                 {
                     /* Usual situation. */
                     if (obstacle1.convex_)
                     {
-                        float leg1 = RVOMath.sqrt(distSq1 - radiusSq);
-                        leftLegDirection = new Vector2(posToObstacle1.x() * leg1 - posToObstacle1.y() * radius_, posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1) / distSq1;
+                        float leg1 = RVOMath.sqrt(distPosToObstacle1Square - radiusSquare);
+                        leftLegDirection =
+                            new Vector2(posToObstacle1.x() * leg1 - posToObstacle1.y() * radius_,
+                            posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1)
+                            / distPosToObstacle1Square;
                     }
                     else
                     {
@@ -218,8 +228,11 @@ namespace RVO
 
                     if (obstacle2.convex_)
                     {
-                        float leg2 = RVOMath.sqrt(distSq2 - radiusSq);
-                        rightLegDirection = new Vector2(posToObstacle2.x() * leg2 + posToObstacle2.y() * radius_, -posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2) / distSq2;
+                        float leg2 = RVOMath.sqrt(distPosToObstacle2Square - radiusSquare);
+                        rightLegDirection =
+                            new Vector2(posToObstacle2.x() * leg2 + posToObstacle2.y() * radius_,
+                            -posToObstacle2.x() * radius_ + posToObstacle2.y() * leg2)
+                            / distPosToObstacle2Square;
                     }
                     else
                     {
@@ -286,10 +299,7 @@ namespace RVO
                     continue;
                 }
 
-                /*
-                 * Project on left leg, right leg, or cut-off line, whichever is
-                 * closest to velocity.
-                 */
+                /* Project on left leg, right leg, or cut-off line, whichever is closest to velocity. */
                 float distSqCutoff = ( t < 0.0f || t > 1.0f || obstacle1 == obstacle2 ) ? float.PositiveInfinity : RVOMath.Square(velocity_ - ( leftCutOff + t * cutOffVector ));
                 float distSqLeft = tLeft < 0.0f ? float.PositiveInfinity : RVOMath.Square(velocity_ - ( leftCutOff + tLeft * leftLegDirection ));
                 float distSqRight = tRight < 0.0f ? float.PositiveInfinity : RVOMath.Square(velocity_ - ( rightCutOff + tRight * rightLegDirection ));
@@ -608,10 +618,7 @@ namespace RVO
         {
             if (directionOpt)
             {
-                /*
-                 * Optimize direction. Note that the optimization velocity is of
-                 * unit length in this case.
-                 */
+                //Optimize direction. Note that the optimization velocity is of unit length in this case.
                 result = optVelocity * radius;
             }
             else if (RVOMath.Square(optVelocity) > RVOMath.Square(radius))
@@ -702,12 +709,7 @@ namespace RVO
                     Vector2 tempResult = result;
                     if (linearProgram2(projLines, radius, new Vector2(-lines[i].direction.y(), lines[i].direction.x()), true, ref result) < projLines.Count)
                     {
-                        /*
-                         * This should in principle not happen. The result is by
-                         * definition already in the feasible region of this
-                         * linear program. If it fails, it is due to small
-                         * floating point error, and the current result is kept.
-                         */
+                        //This should in principle not happen. The result is by definition already in the feasible region of this linear program. If it fails, it is due to small floating point error, and the current result is kept.
                         result = tempResult;
                     }
 
