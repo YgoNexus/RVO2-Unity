@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 
+
 namespace RVO
 {
     /**
@@ -133,7 +134,6 @@ namespace RVO
                         line.direction = RVOMath.normalize(new Vector2(-posToObstacle1.y(), posToObstacle1.x()));
                         orcaLines_.Add(line);
                     }
-
                     continue;
                 }
                 else if (s > 1.0f && distPosToObstacle2Square <= radiusSquare)
@@ -180,17 +180,15 @@ namespace RVO
                         posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1)
                         / distPosToObstacle1Square;
 
-                    rightLegDirection =
+
+                       rightLegDirection =
                         new Vector2(posToObstacle1.x() * leg1 + posToObstacle1.y() * radius_,
                         -posToObstacle1.x() * radius_ + posToObstacle1.y() * leg1)
                         / distPosToObstacle1Square;
                 }
                 else if (s > 1.0f && distSqLine <= radiusSquare)
                 {
-                    /*
-                     * Obstacle viewed obliquely so that
-                     * right vertex defines velocity obstacle.
-                     */
+                    /* Obstacle viewed obliquely so that right vertex defines velocity obstacle. */
                     if (!obstacle2.convex_)
                     {
                         /* Ignore obstacle. */
@@ -241,9 +239,7 @@ namespace RVO
                     }
                 }
 
-                /*
-                   Legs can never point into neighboring edge when convex vertex, take cutoff-line of neighboring edge instead. if velocity projected on "foreign" leg, no constraint is added.
-                 */
+                //Legs can never point into neighboring edge when convex vertex, take cutoff-line of neighboring edge instead. if velocity projected on "foreign" leg, no constraint is added.
 
                 Obstacle leftNeighbor = obstacle1.previous_;
 
